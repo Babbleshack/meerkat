@@ -85,13 +85,23 @@ class Graph:
             return False
         return self._vertices[id]
 
-    def traverse(self, node, visited=[]):
-        visited.append(node)
+    def traverse(self, node, visited={}):
+        visited[node.get_id()] = node
         children = node.get_children()
         for child in node.get_children():
             if child.get_id() not in visited:
                 visited = self.traverse(child, visited)
         return visited
+
+    def path_to_root(self, node, visited=[]):
+        visited = node.get_id()
+        if not node.get_parent():
+            return visited
+        else:
+            return self.path_to_root(node.get_parent(), visited)
+
+    def vertices(self):
+        return list(self._vertices.keys())
 
 
 
