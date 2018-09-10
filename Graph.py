@@ -1,8 +1,26 @@
 class vertix:
-    def __init__(self, id, parents, children):
+    def __init__(self, id, parent, children):
         self._id = id;
-        self._parents = parents
+        self._parent = parent
         self._children = children
+
+    def __str__(self):
+        out_str = "id=" + str(self._id)
+        out_str += " parent_id="
+        if self._parent is None:
+            out_str += "0"
+        else:
+            out_str += str(self._parent.get_id())
+        out_str += " children="
+        c_ids = []
+        for child in self._children:
+            c_ids.append(child.get_id())
+        out_str += str(c_ids)
+        return out_str
+
+    def __repr__(self):
+        return self.__str__()
+
 
     def get_id(self):
         return self._id
@@ -10,8 +28,15 @@ class vertix:
     def get_children(self):
         return self._children
 
-    def get_parents(self):
-        return self._parents
+    def set_children(self, children=[]):
+        if children is not None:
+            self._children = children
+
+    def get_parent(self):
+        return self._parent
+
+    def set_parent(self, parent):
+        self._parent = parent
 
 class Graph:
     def __init__(self, height, children):
@@ -21,42 +46,33 @@ class Graph:
         '''
         self._total_v = (children**height) - 1
         self._vertices = {}
+        self._number_of_children = children
         self.init_graph(self._total_v)
 
-    #def create__vertices(self, total):
-    #    '''
-    #    Create _vertices
-    #    '''
-    #    for i in range(total):
-    #        self._vertices[i] = []
-    #    #for i in range(total):
-    #    #    self._vertices.append(vertix(i))
-
-
+    def _calc_child_ids (self, id, number_of_children=2):
+        f_child = id * number_of_children
+        return [n+1 for n in range(f_child, f_child+number_of_children)]
 
     def init_graph(self, total):
         '''
         When o(n) is good enough
         '''
-        #change total to len(self._vertices)
-        #self._vertices = {range(self._total_v)}
-        for i in range(total):
-            if i == 0:
-                self._vertices[i] = [1, 2]
+        self._vertices = {n: vertix(n, None, []) for n in range(self._total_v)}
+        ##itterate vertices and associate with children/parent nodes
+        for id, node in self._vertices.items():
+            if id == 0:
+                self._vertices[id]._parent = None
+                if self._total_v > 3:
+                    self._vertices[id].set_children([self._vertices[1], self._vertices[2]])
             else:
-                child_ind = (i * 2) + 1
-                #find parent
-                parent_ind = 0
-#                if i in [1, 2]:
-#                    parent_ind = 0
-#                else:
-#
-                if child_ind > (total - 1):
-                    continue #were done
-                #TODO: replace with list comprehension and add
-                #children, maybe refactor to func.
-                children = [child_ind, child_ind + 1]
-                self._vertices[i] = children
+                child_ind = self._calc_child_ids(id, self._number_of_children)
+                if child_ind[0] > (total - 1):
+                    continue #break were done
+                else:
+                    children = [self._vertices[n] for n in child_ind if n < self._total_v]
+                    self._vertices[id].set_children(children)
+                    for child in children:
+                        child.set_parent(self._vertices[id])
 
     def get_total(self):
         return self._total_v
@@ -66,26 +82,9 @@ class Graph:
             return False
         return self._vertices[id]
 
+g = Graph(4,2) ## limited to two children
+print(g._vertices[0])
+print("---")
+for id, node in g._vertices.items():
+    print(node)
 
-    #def init_edges(self, total):
-    #    '''
-    #    When o(n) is good enough
-    #    '''
-    #    #change total to len(self.vertices)
-    #    self._edges = {}
-    #    for i in range(total):
-    #        if i == 0:
-    #            self._edges[i] = [1, 2]
-    #        else:
-    #            child_ind = (i * 2) + 1
-    #            if child_ind > (total - 1):
-    #                continue #were done
-    #            #replace with list comprehension
-    #            children = [child_ind, child_ind + 1]
-    #            self._edges[i] = children
-
-#g = Graph(4,2) ## limited to two children
-#print("---EDGES---")
-#for n in g._vertices:
-#    for i in g._vertices[n]:
-#        print(str(n) + "->" + str(i))
