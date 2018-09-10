@@ -77,14 +77,33 @@ class Graph:
     def get_total(self):
         return self._total_v
 
+    def get_node(self, id):
+        return self._vertices[id]
+
     def get_children(self, id):
         if id not in self._vertices:
             return False
         return self._vertices[id]
+
+    def traverse(self, node, visited=[]):
+        visited.append(node)
+        children = node.get_children()
+        for child in node.get_children():
+            if child.get_id() not in visited:
+                visited = self.traverse(child, visited)
+        return visited
+
+
 
 g = Graph(4,2) ## limited to two children
 print(g._vertices[0])
 print("---")
 for id, node in g._vertices.items():
     print(node)
+
+print(g.traverse(g.get_node(5)))
+
+for id, node in g._vertices.items():
+    for child in node.get_children():
+        print(str(node.get_id()) + "->" + str(child.get_id()))
 
