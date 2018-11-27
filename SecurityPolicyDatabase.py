@@ -9,9 +9,6 @@ class SecurityPolicyDatabase:
         self.security_policy_database = {}
         self.policies = []
 
-    def add_policy(self, group):
-        self.policies.append(group)
-
     def add_security_policy(self, client_id, sub_graph):
         self.security_policy_database[client_id] = sub_graph
 
@@ -19,28 +16,6 @@ class SecurityPolicyDatabase:
         if client_id not in self.security_policy_database:
             return None
         return self.security_policy_database[client_id]
-
-    def get_database(self):
-        return self.security_policy_database;
-
-    def create_groups(self, number, channel_graph, all_topics=False):
-        '''
-        returns 'number' random sub-graphs
-        plus /* if set to true
-        '''
-        groups = {}
-        vertices = channel_graph.vertices()
-        for i in range(number):
-            shuffle(vertices)
-            s_node = choice(vertices)
-            #could choose same twice, remove choice
-            groups[i] = channel_graph.traverse(channel_graph.get_node(s_node))
-            n_ind = vertices.index(s_node)
-            del vertices[n_ind]
-        if all_topics:
-            groups[0] = channel_graph
-        return groups
-
 
     def create_group_r(self, number, channel_graph):
         '''
@@ -69,6 +44,3 @@ class SecurityPolicyDatabase:
         group = channel_graph.traverse(node, {})
         return group
 
-    def assign_group(self, client_id, group):
-        self.security_policy_database[client_id] = group
-        return group

@@ -94,9 +94,11 @@ class Graph:
             return False
         return self._vertices[id].get_children()
 
-    def traverse(self, node, visited):
+    def traverse(self, node, visited=None):
         if not visited:
             visited = {}
+        if type(node) == 'int':
+            node = self.get_node(node)
         visited[node.get_id()] = node
         children = node.get_children()
         for child in node.get_children():
@@ -115,6 +117,13 @@ class Graph:
 
 
     def path(self, src, target, path=None, node=None):
+        '''
+        Find path between src and target by traversing
+        parent nodes from target to src
+
+        if node is reached with value lower than target is reached,
+        the function return None
+        '''
         if path is None:
             path = []
         if node is None:
@@ -150,23 +159,3 @@ class Graph:
 
     def __repr__(self):
         return self.__str__()
-
-#g = Graph(4,2) ## limited to two children
-#print(g)
-#print(g._vertices[0])
-#print("---")
-#for id, node in g._vertices.items():
-#    print(node)
-#
-#print(g.traverse(g.get_node(5)))
-#
-#g.print_graph()
-
-#for id, node in g._vertices.items():
-#    for child in node.get_children():
-#        print(str(node.get_id()) + "->" + str(child.get_id()))
-
-#print(g.get_node(5))
-#print(g.get_node(5).get_children())
-#
-#print(str(g._vertices))
