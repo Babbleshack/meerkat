@@ -2,6 +2,9 @@ import uuid
 
 from Graph import *
 import SecurityPolicyDatabase
+from logger import *
+from key_exchange_helper import print_spd
+from key_exchange_helper import print_sad
 
 class SecurityAssociation:
     def __init__(self, sa_id, sub_graph, key):
@@ -11,6 +14,15 @@ class SecurityAssociation:
         if type(sub_graph) == 'int':
             print("GOT BULLSHIT SA")
             print(self)
+
+    def get_id(self):
+        return self.id
+
+    def get_sub_graph(self):
+        return self.sub_graph
+
+    def get_key(self):
+        return self.key
 
 
     def __str__(self):
@@ -35,6 +47,17 @@ class SecurityAssociationDatabase:
         self._security_policies = spd
         self._channel_graph = channel_graph
 
+    def add_security_association(self, target, sa):
+        print_okblue("Adding new SA [{}] for target [{}]".format(sa, target))
+        self._security_associations[target] = sa
+
+    def remove_security_association(self, sec_asoc):
+        for t_id, sa in self._security_associations.items():
+            if sec_asoc.key == sa.key:
+                del self._security_associations[t_id]
+                return True
+        return False
+
     def generate_key(self):
         return uuid.uuid4().hex
                 #new SA
@@ -42,6 +65,7 @@ class SecurityAssociationDatabase:
     def key_lookup(self, target):
         '''
         return every key 'target appears in
+        target is same type as key of vertices
         '''
         sa_list = []
         for id, sa in self._security_associations.items():
@@ -54,9 +78,6 @@ class SecurityAssociationDatabase:
                 sa_list.append(sa)
         return sa_list
 
-
-
-
     def find_valid_sa(self, client_id, target):
         '''
         Find a valid sa for a given target node for a client
@@ -66,12 +87,6 @@ class SecurityAssociationDatabase:
         if sp is None:
             return None
         sp_set = set(sp.keys())
-        #for id, sa in self._security_associations:
-        #    sg_set = set(sa.sub_graph)
-        #    if sg_set.issubset(sp_set):
-        #        return sa
-        #refactored: faster to get all sa for a topic, and then
-        # check each for valid sa.
         topic_sa_list = self.key_lookup(target)
         if not topic_sa_list:
             return None
@@ -91,6 +106,7 @@ class SecurityAssociationDatabase:
         if not key:
             key = self.generate_key()
         #get sec policies
+        print("Checking client id for")
         sp = self._security_policies.get_security_policy(client_id)
         if sp is None:
             print("NO SP FOUND!")
@@ -100,7 +116,7 @@ class SecurityAssociationDatabase:
         #path between sp-root and target
         if target == 0: #topic tree root
             print("Creating root path")
-            path = self._channel_graph.keys
+            path = self._channel_graph.vertices()
             print(path)
         else:
             path = self._channel_graph.path(sp_r, target)

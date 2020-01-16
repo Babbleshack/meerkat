@@ -1,0 +1,226 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_OUTPUT_MODE	u-ctags	/u-ctags or e-ctags/
+!_TAG_PROGRAM_AUTHOR	Universal Ctags Team	//
+!_TAG_PROGRAM_NAME	Universal Ctags	/Derived from Exuberant Ctags/
+!_TAG_PROGRAM_URL	https://ctags.io/	/official site/
+!_TAG_PROGRAM_VERSION	0.0.0	/3fdf28bc/
+Client	mqtt-experiment.py	/^class Client:$/;"	c
+Contact	README.md	/^## Contact$/;"	s
+ENDC	bcolors.py	/^    ENDC = '\\033[0m'$/;"	v	class:bcolors
+ENDC	logger.py	/^    ENDC = '\\033[0m'$/;"	v	class:c_codes
+ENDC	test.py	/^    ENDC = '\\033[0m'$/;"	v	class:bcolors
+FAIL	bcolors.py	/^    FAIL = '\\033[91m'$/;"	v	class:bcolors
+FAIL	logger.py	/^    FAIL = '\\033[91m'$/;"	v	class:c_codes
+FAIL	test.py	/^    FAIL = '\\033[91m'$/;"	v	class:bcolors
+GROUPS	mqtt-experiment.py	/^GROUPS = cycle(client_groups)$/;"	v
+Graph	Graph.py	/^class Graph:$/;"	c
+Graph	test2.py	/^class Graph:$/;"	c
+HEADER	bcolors.py	/^    HEADER = '\\033[95m'$/;"	v	class:bcolors
+HEADER	logger.py	/^    HEADER = '\\033[95m'$/;"	v	class:c_codes
+HEADER	test.py	/^    HEADER = '\\033[95m'$/;"	v	class:bcolors
+INTERACTIVE	test.py	/^        INTERACTIVE = True$/;"	v
+INTERACTIVE	test.py	/^INTERACTIVE = False$/;"	v
+MAX_V	test.py	/^    MAX_V = max(channel_graph._vertices)$/;"	v
+MQTT_ADDR	mqtt-experiment.py	/^MQTT_ADDR = "127.0.0.1"$/;"	v
+MQTT_PORT	mqtt-experiment.py	/^MQTT_PORT = 1883$/;"	v
+OKBLUE	bcolors.py	/^    OKBLUE = '\\033[94m'$/;"	v	class:bcolors
+OKBLUE	logger.py	/^    OKBLUE = '\\033[94m'$/;"	v	class:c_codes
+OKBLUE	test.py	/^    OKBLUE = '\\033[94m'$/;"	v	class:bcolors
+OKGREEN	bcolors.py	/^    OKGREEN = '\\033[92m'$/;"	v	class:bcolors
+OKGREEN	logger.py	/^    OKGREEN = '\\033[92m'$/;"	v	class:c_codes
+OKGREEN	test.py	/^    OKGREEN = '\\033[92m'$/;"	v	class:bcolors
+SA	test.py	/^        SA = sad.client_lookup(client_id, target)$/;"	v
+SA	test.py	/^    SA = None$/;"	v
+SP	test.py	/^    SP = spd.get_security_policy(client_id)$/;"	v
+SecurityAssociation	SecurityAsscoiationDatabase.py	/^class SecurityAssociation:$/;"	c
+SecurityAssociationDatabase	SecurityAsscoiationDatabase.py	/^class SecurityAssociationDatabase:$/;"	c
+SecurityPolicyDatabase	SecurityPolicyDatabase.py	/^class SecurityPolicyDatabase:$/;"	c
+Server	mqtt-experiment.py	/^class Server:$/;"	c
+TEST	test.py	/^        TEST = True$/;"	v
+TEST	test.py	/^TEST = False$/;"	v
+TESTBED	test.py	/^        TESTBED = True$/;"	v
+TESTBED	test.py	/^TESTBED = False$/;"	v
+WARNING	bcolors.py	/^    WARNING = '\\033[93m'$/;"	v	class:bcolors
+WARNING	logger.py	/^    WARNING = '\\033[93m'$/;"	v	class:c_codes
+WARNING	test.py	/^    WARNING = '\\033[93m'$/;"	v	class:bcolors
+__init__	Graph.py	/^    def __init__(self, height, children):$/;"	m	class:Graph
+__init__	Graph.py	/^    def __init__(self, id, parent, children):$/;"	m	class:vertix
+__init__	SecurityAsscoiationDatabase.py	/^    def __init__(self, sa_id, sub_graph, key):$/;"	m	class:SecurityAssociation
+__init__	SecurityAsscoiationDatabase.py	/^    def __init__(self, spd, channel_graph):$/;"	m	class:SecurityAssociationDatabase
+__init__	SecurityPolicyDatabase.py	/^    def __init__(self):$/;"	m	class:SecurityPolicyDatabase
+__init__	client.py	/^    def __init__(self, SPD, channels):$/;"	m	class:client
+__init__	mqtt-experiment.py	/^    def __init__(self, spd, sad, channel_graph, server_id="key-server"):$/;"	m	class:Server
+__init__	mqtt-experiment.py	/^    def __init__(self, topic_group, client_id, spd, channel_graph):$/;"	m	class:Client
+__init__	test2.py	/^    def __init__(self, height, children):$/;"	m	class:Graph
+__init__	test2.py	/^    def __init__(self, id):$/;"	m	class:vertix
+__repr__	Graph.py	/^    def __repr__(self):$/;"	m	class:Graph
+__repr__	Graph.py	/^    def __repr__(self):$/;"	m	class:vertix
+__repr__	SecurityAsscoiationDatabase.py	/^    def __repr__(self):$/;"	m	class:SecurityAssociation
+__str__	Graph.py	/^    def __str__(self):$/;"	m	class:Graph
+__str__	Graph.py	/^    def __str__(self):$/;"	m	class:vertix
+__str__	SecurityAsscoiationDatabase.py	/^    def __str__(self):$/;"	m	class:SecurityAssociation
+_calc_child_ids	Graph.py	/^    def _calc_child_ids (self, id, number_of_children=2):$/;"	m	class:Graph
+_replace_topic_str	mqtt-experiment.py	/^    def _replace_topic_str(self, topic_str, new_target, seperator="\/"):$/;"	m	class:Server
+add_sad_entry	client.py	/^    def add_sad_entry(self, channel, key):$/;"	m	class:client
+add_security_association	SecurityAsscoiationDatabase.py	/^    def add_security_association(self, target, sa):$/;"	m	class:SecurityAssociationDatabase
+add_security_policy	SecurityPolicyDatabase.py	/^    def add_security_policy(self, client_id, sub_graph):$/;"	m	class:SecurityPolicyDatabase
+all_g	mqtt-experiment.py	/^all_g = spd.create_group(root, channel_graph)$/;"	v
+argv	test.py	/^argv = sys.argv[1::]$/;"	v
+authenticate_client	mqtt-experiment.py	/^    def authenticate_client(self, client_id, payload, topic_str):$/;"	m	class:Server
+bcolors	bcolors.py	/^class bcolors:$/;"	c
+bcolors	test.py	/^class bcolors:$/;"	c
+c_codes	logger.py	/^class c_codes:$/;"	c
+c_thread	mqtt-experiment.py	/^c_thread = threading.Thread(target=create_client_worker, kwargs=client_args)$/;"	v
+channel_graph	mqtt-experiment.py	/^channel_graph = Graph(height, children)$/;"	v
+channel_graph	test.py	/^channel_graph = Graph(height, children)$/;"	v
+channel_graph	test_g.py	/^channel_graph = Graph(3, 2)$/;"	v
+children	mqtt-experiment.py	/^children = 2$/;"	v
+children	test.py	/^    children = 2$/;"	v
+choose_c	test.py	/^    def choose_c(clients=4):$/;"	f
+choose_random_topic	mqtt-experiment.py	/^    def choose_random_topic(self):$/;"	m	class:Client
+choose_t	test.py	/^    def choose_t(topics=6):$/;"	f
+client	client.py	/^class client:$/;"	c
+client_args	mqtt-experiment.py	/^client_args = {$/;"	v
+client_groups	mqtt-experiment.py	/^client_groups = spd.create_group_r(5, channel_graph)$/;"	v
+client_id	test.py	/^client_id = 5$/;"	v
+clients	test.py	/^    clients = 4$/;"	v
+connect	mqtt-experiment.py	/^    def connect(self):$/;"	m	class:Client
+connect	mqtt-experiment.py	/^    def connect(self):$/;"	m	class:Server
+create_client_worker	mqtt-experiment.py	/^def create_client_worker(group, client_id, spd, channel_graph):$/;"	f
+create_enc_message	key_exchange_helper.py	/^def create_enc_message(topic_id, key, payload, json_encode=False):$/;"	f
+create_group	SecurityPolicyDatabase.py	/^    def create_group(self, node, channel_graph):$/;"	m	class:SecurityPolicyDatabase
+create_group_r	SecurityPolicyDatabase.py	/^    def create_group_r(self, number, channel_graph):$/;"	m	class:SecurityPolicyDatabase
+create_msg_packet	key_exchange_helper.py	/^def create_msg_packet(source_id, target, payload, json_encode=False):$/;"	f
+create_request_packet	key_exchange_helper.py	/^def create_request_packet(target, client_id, json_encode=False):$/;"	f
+create_response_packet	key_exchange_helper.py	/^def create_response_packet(client, target, sa, json_encode=False):$/;"	f
+create_sa	SecurityAsscoiationDatabase.py	/^    def create_sa(self, client_id, target, key=None):$/;"	m	class:SecurityAssociationDatabase
+create_server_worker	mqtt-experiment.py	/^def create_server_worker(server_id, spd, channel_graph):$/;"	f
+create_vertices	test2.py	/^    def create_vertices(self, total):$/;"	m	class:Graph
+d_thread	mqtt-experiment.py	/^d_thread = threading.Thread(target=create_client_worker, kwargs=client_args)$/;"	v
+disable	bcolors.py	/^    def disable(self):$/;"	m	class:bcolors
+disable	test.py	/^    def disable(self):$/;"	m	class:bcolors
+find_valid_sa	SecurityAsscoiationDatabase.py	/^    def find_valid_sa(self, client_id, target):$/;"	m	class:SecurityAssociationDatabase
+g	path_test.py	/^g = Graph(4,2)$/;"	v
+generate_key	SecurityAsscoiationDatabase.py	/^    def generate_key(self):$/;"	m	class:SecurityAssociationDatabase
+get_children	Graph.py	/^    def get_children(self):$/;"	m	class:vertix
+get_children	Graph.py	/^    def get_children(self, id):$/;"	m	class:Graph
+get_id	Graph.py	/^    def get_id(self):$/;"	m	class:vertix
+get_id	SecurityAsscoiationDatabase.py	/^    def get_id(self):$/;"	m	class:SecurityAssociation
+get_key	SecurityAsscoiationDatabase.py	/^    def get_key(self):$/;"	m	class:SecurityAssociation
+get_node	Graph.py	/^    def get_node(self, id):$/;"	m	class:Graph
+get_parent	Graph.py	/^    def get_parent(self):$/;"	m	class:vertix
+get_security_policy	SecurityPolicyDatabase.py	/^    def get_security_policy(self, client_id):$/;"	m	class:SecurityPolicyDatabase
+get_sub_graph	SecurityAsscoiationDatabase.py	/^    def get_sub_graph(self):$/;"	m	class:SecurityAssociation
+get_topic_str	Graph.py	/^    def get_topic_str(self, node, seperator="\/"):$/;"	m	class:Graph
+get_total	Graph.py	/^    def get_total(self):$/;"	m	class:Graph
+groups	test.py	/^    groups = []$/;"	v
+groups	test.py	/^    groups = {}$/;"	v
+groups_cycle	test.py	/^    groups_cycle = cycle(client_groups)$/;"	v
+handle_authentication_response	mqtt-experiment.py	/^    def handle_authentication_response(self, source_id, payload, topic_str):$/;"	m	class:Client
+height	mqtt-experiment.py	/^height = 3$/;"	v
+height	test.py	/^    height = 3$/;"	v
+height	test.py	/^    height = int(input("How many levels: "))$/;"	v
+init_edges	test2.py	/^    def init_edges(self, total):$/;"	m	class:Graph
+init_graph	Graph.py	/^    def init_graph(self, total):$/;"	m	class:Graph
+interactive	test.py	/^    interactive = True$/;"	v
+k	test.py	/^    k = choice(sp_keys)$/;"	v
+key_lookup	SecurityAsscoiationDatabase.py	/^    def key_lookup(self, target):$/;"	m	class:SecurityAssociationDatabase
+keys	test.py	/^    keys = channel_graph._vertices.keys()$/;"	v
+lookup_sad	client.py	/^    def lookup_sad(self, channel_uri):$/;"	m	class:client
+loop	mqtt-experiment.py	/^    def loop(self):$/;"	m	class:Client
+loop	mqtt-experiment.py	/^    def loop(self):$/;"	m	class:Server
+mqtt	mqtt-experiment.py	/^import paho.mqtt.client as mqtt$/;"	I
+mqtt	test.py	/^import paho.mqtt.client as mqtt$/;"	I
+mqtt	test_g.py	/^import paho.mqtt.client as mqtt$/;"	I
+n0	test.py	/^    n0 = channel_graph.get_node(0)$/;"	v
+n1	test.py	/^    n1 = channel_graph.get_node(1)$/;"	v
+n2	test.py	/^    n2 = channel_graph.get_node(2)$/;"	v
+n5	test.py	/^    n5 = channel_graph.get_node(5)$/;"	v
+n_clients	mqtt-experiment.py	/^n_clients = 1$/;"	v
+n_clients	test.py	/^    n_clients = 6$/;"	v
+n_clients	test.py	/^    n_clients = int(input("Number of clients: "))$/;"	v
+n_groups	test.py	/^    n_groups = 3$/;"	v
+n_groups	test.py	/^    n_groups = 8$/;"	v
+n_groups	test.py	/^    n_groups = int(input("Number of Groups\/Policies: "))$/;"	v
+on_message	mqtt-experiment.py	/^    def on_message(self, client, userdata, message):$/;"	m	class:Client
+on_message	mqtt-experiment.py	/^    def on_message(self, client_id, userdata, message):$/;"	m	class:Server
+parse_request_packet	key_exchange_helper.py	/^def parse_request_packet(request_packet):$/;"	f
+path	Graph.py	/^    def path(self, src, target, path=None, node=None):$/;"	m	class:Graph
+path_to_root	Graph.py	/^    def path_to_root(self, node, visited=None):$/;"	m	class:Graph
+print_fail	bcolors.py	/^    def print_fail(self, string):$/;"	m	class:bcolors
+print_fail	logger.py	/^def print_fail(string):$/;"	f
+print_graph	Graph.py	/^    def print_graph(self):$/;"	m	class:Graph
+print_header	bcolors.py	/^    def print_header(self, string):$/;"	m	class:bcolors
+print_header	logger.py	/^def print_header(string):$/;"	f
+print_okblue	bcolors.py	/^    def print_okblue(self, string):$/;"	m	class:bcolors
+print_okblue	logger.py	/^def print_okblue(string):$/;"	f
+print_okgreen	bcolors.py	/^    def print_okgreen(self, string):$/;"	m	class:bcolors
+print_okgreen	logger.py	/^def print_okgreen(string):$/;"	f
+print_sad	key_exchange_helper.py	/^def print_sad(sad, title='SAD'):$/;"	f
+print_sad	test.py	/^def print_sad(sad):$/;"	f
+print_spd	key_exchange_helper.py	/^def print_spd(spd, title='SPD'):$/;"	f
+print_spd	test.py	/^def print_spd(spd):$/;"	f
+print_warning	bcolors.py	/^    def print_warning(self, string):$/;"	m	class:bcolors
+print_warning	logger.py	/^def print_warning(string):$/;"	f
+process_message	mqtt-experiment.py	/^    def process_message(self, msg_json, topic_str):$/;"	m	class:Client
+process_message	mqtt-experiment.py	/^    def process_message(self, msg_json, topic_str):$/;"	m	class:Server
+random_loop	mqtt-experiment.py	/^    def random_loop(self):$/;"	m	class:Client
+random_request	mqtt-experiment.py	/^    def random_request(self):$/;"	m	class:Client
+rcv_msg	mqtt-experiment.py	/^    def rcv_msg(self, source_id, msg):$/;"	m	class:Client
+remove_security_association	SecurityAsscoiationDatabase.py	/^    def remove_security_association(self, sec_asoc):$/;"	m	class:SecurityAssociationDatabase
+replace_topic_str	key_exchange_helper.py	/^def replace_topic_str(topic_str, new_target, seperator="\/"):$/;"	f
+request_sec_asoc	mqtt-experiment.py	/^    def request_sec_asoc(self, topic_id):$/;"	m	class:Client
+root	mqtt-experiment.py	/^root = channel_graph.get_node(0)$/;"	v
+s_thread	mqtt-experiment.py	/^s_thread = threading.Thread(target=create_server_worker, kwargs=server_args)$/;"	v
+sa	test.py	/^    sa = None$/;"	v
+sa	test.py	/^    sa = sad.client_lookup(0, 2)$/;"	v
+sa	test.py	/^    sa = sad.client_lookup(0, 4)$/;"	v
+sa	test.py	/^    sa = sad.client_lookup(1, 3)$/;"	v
+sa	test.py	/^    sa = sad.client_lookup(2, 2)$/;"	v
+sa	test.py	/^    sa = sad.client_lookup(3, 5)$/;"	v
+sa	test.py	/^    sa = sad.client_lookup(3, 6)$/;"	v
+sad	mqtt-experiment.py	/^sad = SecurityAssociationDatabase(spd, channel_graph)$/;"	v
+sad	test.py	/^sad = SecurityAssociationDatabase(spd, channel_graph)$/;"	v
+sec_a	test.py	/^    sec_a = sad.client_lookup(client_id, k)$/;"	v
+sec_sa	test.py	/^                sec_sa = sad.create_sa_2(c, t)$/;"	v
+sec_sa	test.py	/^            sec_sa = None$/;"	v
+sec_sa	test.py	/^            sec_sa = sad.find_valid_sa(c, t)$/;"	v
+sec_sa	test.py	/^            sec_sa = sad.key_lookup(t)$/;"	v
+send_enc_packet	mqtt-experiment.py	/^    def send_enc_packet(self, topic_id, msg, target='PUBLISH'):$/;"	m	class:Client
+server_args	mqtt-experiment.py	/^server_args = {$/;"	v
+server_loop	mqtt-experiment.py	/^    def server_loop(self):$/;"	m	class:Server
+set_children	Graph.py	/^    def set_children(self, children=[]):$/;"	m	class:vertix
+set_parent	Graph.py	/^    def set_parent(self, parent):$/;"	m	class:vertix
+sp_keys	test.py	/^    sp_keys = list(spd.get_security_policy(client_id).keys())$/;"	v
+spd	mqtt-experiment.py	/^spd = SecurityPolicyDatabase()$/;"	v
+spd	test.py	/^spd = SecurityPolicyDatabase()$/;"	v
+start	mqtt-experiment.py	/^    def start(self):$/;"	m	class:Client
+string_fail	bcolors.py	/^    def string_fail(self, string):$/;"	m	class:bcolors
+string_fail	logger.py	/^def string_fail(string):$/;"	f
+string_header	bcolors.py	/^    def string_header(self, string):$/;"	m	class:bcolors
+string_header	logger.py	/^def string_header(string):$/;"	f
+string_okblue	bcolors.py	/^    def string_okblue(self, string):$/;"	m	class:bcolors
+string_okblue	logger.py	/^def string_okblue(string):$/;"	f
+string_okgreen	bcolors.py	/^    def string_okgreen(self, string):$/;"	m	class:bcolors
+string_okgreen	logger.py	/^def string_okgreen(string):$/;"	f
+string_warning	bcolors.py	/^    def string_warning(self, string):$/;"	m	class:bcolors
+string_warning	logger.py	/^def string_warning(string):$/;"	f
+t	path_test.py	/^t = g.path(1,14)$/;"	v
+t	path_test.py	/^t = g.path(2,14)$/;"	v
+t_sa	test.py	/^            t_sa = None$/;"	v
+t_sa	test.py	/^            t_sa = sad.key_lookup(t)$/;"	v
+time_loop	mqtt-experiment.py	/^    def time_loop(self, timeout=3):$/;"	m	class:Client
+time_loop	mqtt-experiment.py	/^    def time_loop(self, timeout=3):$/;"	m	class:Server
+timed_random_choice	mqtt-experiment.py	/^    def timed_random_choice(self, interval=1):$/;"	m	class:Client
+topics	test.py	/^    topics = 7$/;"	v
+traverse	Graph.py	/^    def traverse(self, node, visited=None):$/;"	m	class:Graph
+validate_enc_message	key_exchange_helper.py	/^def validate_enc_message(packet):$/;"	f
+validate_msg	key_exchange_helper.py	/^def validate_msg(msg):$/;"	f
+validate_request_packet	key_exchange_helper.py	/^def validate_request_packet(request_packet):$/;"	f
+validate_response_packet	key_exchange_helper.py	/^def validate_response_packet(response_packet):$/;"	f
+vertices	Graph.py	/^    def vertices(self):$/;"	m	class:Graph
+vertices_nodes	Graph.py	/^    def vertices_nodes(self):$/;"	m	class:Graph
+vertix	Graph.py	/^class vertix:$/;"	c
+vertix	test2.py	/^class vertix:$/;"	c
+wrap_packet	key_exchange_helper.py	/^def wrap_packet(source_id, target, data, json_encode=False):$/;"	f

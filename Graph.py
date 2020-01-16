@@ -1,3 +1,4 @@
+from logger import *
 class vertix:
     def __init__(self, id, parent, children):
         self._id = id;
@@ -20,7 +21,6 @@ class vertix:
 
     def __repr__(self):
         return self.__str__()
-
 
     def get_id(self):
         return self._id
@@ -108,10 +108,12 @@ class Graph:
                 visited = self.traverse(child, visited)
         return visited
 
-    def path_to_root(self, node, visited=[]):
+    def path_to_root(self, node, visited=None):
+        if not visited:
+            visited = []
         visited.append(node.get_id())
         if not node.get_parent():
-            return visited
+            return visited[::-1]
         else:
             return self.path_to_root(node.get_parent(), visited)
 
@@ -148,6 +150,15 @@ class Graph:
         for id, node in self._vertices.items():
             for child in node.get_children():
                 print(str(node.get_id()) + "->" + str(child.get_id()))
+
+    def get_topic_str(self, node, seperator="/"):
+        if isinstance(node, int):
+            node = self.get_node(node)
+        if not node:
+            return None
+        path = self.path_to_root(node)
+        path_str = seperator.join(str(x) for x in path)
+        return path_str
 
     def __str__(self):
         out_str = ""

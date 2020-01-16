@@ -4,21 +4,16 @@ import time
 import json
 
 from itertools import cycle
+from random import choice
+from datetime import datetime
+
+from key_exchange_helper import *
+
 from Graph import Graph;
 from SecurityPolicyDatabase import SecurityPolicyDatabase
-from SecurityAsscoiationDatabase import SecurityAssociationDatabase
-from bcolors import bcolors
-
-bcolors = bcolors()
-
-def print_spd(spd):
-    print("-----------SPD-------------")
-    print("client-id | subgraph")
-    for client in spd.security_policy_database:
-#        print (str(client) + "--------->")
-        print (bcolors.OKBLUE + str(spd.security_policy_database[client]) + bcolors.ENDC)
-    print("----END-SPD-------")
-
+from SecurityAsscoiationDatabase import SecurityAssociationDatabase, SecurityAssociation
+#from import bcolors
+from logger import *
 
 MQTT_ADDR = "127.0.0.1"
 MQTT_PORT = 1883
@@ -36,7 +31,6 @@ class Server:
         self.mqtt_con = mqtt.Client(self.id)
         self.mqtt_con.on_message = self.on_message
         self.mqtt_con.connect(MQTT_ADDR, MQTT_PORT, keepalive=60, bind_address="")
-        #client.connect(MQTT_ADDR, MQTT_PORT)
 
 
     def server_loop(self):
@@ -44,21 +38,25 @@ class Server:
         Starts experiment by creating new sad entry for /*
         '''
         #root_sa = self.sad.create_sa()
-        #bcolors.print_okgreen("Created Root node SA: " + str(root_sa))
+        #print_okgreen("Created Root node SA: " + str(root_sa))
         self.mqtt_con.subscribe("#") #subscribe to all
         while self.message_loop:
             self.mqtt_con.loop()
-            #bcolors.print_okblue("Message Loop: " + str(self.message_loop))
+            #print_okblue("Message Loop: " + str(self.message_loop))
 
     def on_message(self, client_id, userdata, message):
-        bcolors.print_okgreen("Processing Message")
+        '''
+        Process new message packet
+        '''
+        print_okblue("---- {}:: Processing Message ---".format(self.id))
         msg = str(message.payload.decode("utf-8"))
         topic = message.topic
         if msg == 'KILL-SIGNAL':
-            bcolors.print_warning("GOT KILL SIGNAL, SETTING MESSAGE_LOOP FLAG TO FALSE")
+            print_warning("GOT KILL SIGNAL, SETTING MESSAGE_LOOP FLAG TO FALSE")
             self.message_loop = False
         else:
             self.process_message(msg, topic)
+        print_okblue("---- {}:: Finished Processing Message ---".format(self.id))
 
     def process_message(self, msg_json, topic_str):
         '''
@@ -71,147 +69,73 @@ class Server:
             }
         }
         '''
-        error = False
+
         if not msg_json or not topic_str:
             return
 
         msg = json.loads(msg_json)
-        if not 'client_id' in msg:
-            bcolors.print_warning("cannot find client id")
-            error = True
-        #elif not msg['topic_id']:
-        #    bcolors.print_warning("Cannot find topid id")
-        #    error = True
-        elif not 'target' in msg:
-            bcolors.print_warning("Cannot find target")
-            error = True
-        elif not 'payload' in msg:
-            bcolors.print_warning("Cannot find message payload")
-            error = True
 
-        if error:
-            bcolors.print_fail("Failed to process message: \n" + str(msg_json))
+        if not validate_msg(msg):
+            print_fail("{}::Failed to process message:\n{}".format(self.id, msg_json))
             return
 
-        client_id = msg['client_id']
+        source_id = msg['source_id']
         payload = msg['payload']
         target = msg['target']
 
-        print(client_id)
-        print(self.id)
-        if client_id == self.id:
-            bcolors.print_warning("WARNING: received own message")
+        if source_id == self.id:
             return
-        print("--------------")
 
-
-        bcolors.print_okblue("Received new valid message:\n{}".format(msg_json))
+        #print_okblue("{} :: Received new valid message:\n{}".format(self.id, msg_json))
 
         if target == 'KEY-REQUEST':
-            print("TARGET KEY-REQUEST")
-            self.authenticate_client(client_id, payload, topic_str)
+            self.authenticate_client(source_id, payload, topic_str)
         else:
-            bcolors.print_warning("WARNING: could not process message {}".format(msg_json))
+            print_warning("{} : WARNING: could not process message {}".format(self.id, msg_json))
 
     def authenticate_client(self, client_id, payload, topic_str):
         '''
+        TODO: remove client_id arg
         authenticate a client request, if successful sends response topic
         on by replacing ADVERTISEMENT token with RESPONSE token
         authentication packet = {
-            target : "<node-id>"
+            target : "<node-id>",
+            client_id : "id of request client"
         }
         '''
         if type(payload) == 'str':
-            request = self._parse_request_packet(payload)
+            request = parse_request_packet(payload)
         else:
             request = payload
-        if not self._validate_request_packet(request):
-            bcolors.print_warning("Unable to validate request packet:\n{}".format(str(request)))
+
+        if not validate_request_packet(request):
+            print_warning("Unable to validate request packet:\n{}".format(str(request)))
             return
         target = request['target']
         sa = None
         #Try to fetch sa for client and target
         sa = self.sad.find_valid_sa(client_id, target)
         if not sa: # NO sa in database, try to create a new one
-            bcolors.print_warning("WARNING:: could not find sa for client" +
+            print_warning("WARNING:: could not find sa for client" +
                                       " [{}] for target [{}], trying to create one...".format(client_id, target))
         if not sa: # NO sa in database, try to create a new one
             sa  = self.sad.create_sa(client_id, target)
 
         if not sa:
-            bcolors.print_fail("WARNING:: could not authenticate client" +
+            print_warning("WARNING:: could not authenticate client" +
                                   " [{}] for target [{}]".format(client_id, target))
             return None
+        print_sad(self.sad, "{}-SAD".format(self.id))
         # Send client new key
-        sa_packet = self._create_sa_packet(client_id, target, sa)
-        msg_packet = self._wrap_packet(self.id, target, sa_packet, json_encode=True)
-        rsp_topic = self._replace_topic_str(topic_str, "RESPONSE")
+        rsp_packet = create_response_packet(client_id, target, sa)
+        msg_packet = create_msg_packet(self.id, "RESPONSE", rsp_packet, json_encode=True)
+        rsp_topic = replace_topic_str(topic_str, "RESPONSE")
         self.mqtt_con.publish(rsp_topic, msg_packet)
 
     def _replace_topic_str(self, topic_str, new_target, seperator="/"):
         topics = topic_str.split(seperator)
         topics[-1] = new_target
         return seperator.join(topics)
-
-
-    def _parse_request_packet(self, request_packet):
-        r_packet = None
-        try:
-            r_packet = json.loads(request_packet)
-        except:
-            bcolors.print_fail("ERROR: Failed to parse request packet:\n{}".format(request_packet))
-        return r_packet
-
-
-    def _validate_request_packet(self, request_packet):
-        valid = True
-        if not request_packet['target']:
-            valid = False
-        return valid
-
-    #def authenticate_client(self, client_id, topic_str, target):
-    #    #TODO: error handle =
-    #    sa = None
-    #    #Try to fetch sa for client and target
-    #    sa = self.sad.find_valid_sa(client_id, target)
-    #    if not sa: # NO sa in database, try to create a new one
-    #        sa  = self.sad.create_sa(client_id, target)
-    #    if not sa:
-    #        bcolors.print_warning("WARNING:: could not authenticate client" +
-    #                              "{} for target {}".format(client_id, target))
-    #        return None
-    #    # Send client new key
-    #    sa_packet = self._create_sa_packet(client_id, target, sa)
-    #    msg_packet = self._wrap_packet(client_id, target, sa_packet, json_encode=True)
-    #    self.mqtt_con.publish(topic_str, msg_packet)
-
-    def _create_sa_packet(self, client, target, sa, json_encode=False):
-        '''
-        client_id describs id of client receiving sa
-        i.e. target_client
-        '''
-        sa_packet =  {
-            'client_id' : client,
-            'target' : target,
-            'path' : sa.sub_graph,
-            'key' : sa.key
-        }
-        return json.dumps(sa_packet) if json_encode else sa_packet
-
-    def _wrap_packet(self, client, target, data, json_encode=False):
-        packet = {
-            'client_id' : client,
-            'target' : target,
-            'payload': data
-        }
-        return json.dumps(packet) if json_encode else packet
-
-
-
-
-
-
-
 
     def loop(self):
         print("loop")
@@ -238,6 +162,7 @@ class Client:
         self.mqtt_con = None
         self.channel_graph = channel_graph
         self.message_loop = True
+        self.timestamp = 0 #used for measuring time between random requests
 
     def connect(self):
         self.sad = SecurityAssociationDatabase(self.spd, self.channel_graph)
@@ -248,19 +173,173 @@ class Client:
         #client.connect(MQTT_ADDR, MQTT_PORT)
 
     def on_message(self, client, userdata, message):
-        bcolors.print_okgreen("message received " + str(message.payload.decode("utf-8")))
-        bcolors.print_okgreen("message topic=" + message.topic)
-        bcolors.print_okgreen("message qos=" + str(message.qos))
-        bcolors.print_okgreen("message retain flag=" + str(message.retain))
-        bcolors.print_warning("WARNING:: client::on_message no implemented")
-        topic = str(message.topic)
         msg = str(message.payload.decode("utf-8"))
+        topic = message.topic
         if msg == 'KILL-SIGNAL':
             self.message_loop = False
+        else:
+            self.process_message(msg, topic)
+
+    def process_message(self, msg_json, topic_str):
+        '''
+        example key request (payload), wrapped by message header
+        {
+            "client_id": 0,
+            "target": "KEY-REQUEST",
+            "payload": {
+                "target": 3
+            }
+        }
+        '''
+        if not msg_json or not topic_str:
+            return
+
+        msg = json.loads(msg_json)
+
+        if not validate_msg(msg):
+            print_fail("Failed to process message: \n" + str(msg_json))
+            return
+
+        #print(msg)
+
+        source_id = msg['source_id']
+        payload = msg['payload']
+        target = msg['target']
+
+        if source_id == self.id:
+            return
+
+        print_okblue("Received new valid message:\n{}".format(msg_json))
+
+        if target == 'RESPONSE':
+            print_header("{}:: GOT RESPONSE MESSAGE".format(self.id))
+            self.handle_authentication_response(source_id, payload, topic_str)
+        elif target == 'PUBLISH':
+            print_header("{}:: GOT PUBLISH MESSAGE".format(self.id))
+            self.rcv_msg(source_id, payload)
+        else:
+            print_warning("{}:: WARNING: could not process message {}".format(self.id, msg_json))
+
+
+    def rcv_msg(self, source_id, msg):
+        #print_header("{} :: rcv_msg called : {}".format(self.id, msg))
+        if not validate_enc_message(msg):
+            print_fail(
+                "{}::ERROR:: could not validate encrypted message:\n{}".format(self.id, msg))
+
+        topic_id = msg['topic_id']
+        key = msg['key']
+        payload = msg['payload']
+        #check if topic is part of security policy
+        sp = self.spd.get_security_policy(self.id)
+        sp_keys = sp.keys()
+        if not topic_id in sp_keys:
+            print_fail("{}:: Topic not in secuirty policy dropping: {}".format(self.id, msg))
+            return None
+        #check sad for key,
+        sa_list = self.sad.key_lookup(topic_id)
+        if not sa_list: #find SA
+            self.request_sec_asoc(topic_id)
+            #print_warning(
+            #    "{}:: Could not find SA for {}, making request...".format(self.id, topic_id))
+        else: # SA found
+            key_found = False
+            sec_asoc = None
+            for ind, sa in enumerate(sa_list): #find sa with matching key
+                if sa.key == key:
+                    sec_asoc = sa
+                    break
+            if not sec_asoc: # remove found sa and request a new one
+                self.sad.remove_security_association(sec_asoc)
+                print_warning(
+                    "Could not find SA (stale keys) for" +
+                    " {}, making request...".format(topic_id))
+            else:
+                print_okgreen("{}::Successfully decrypted message: {}".format(msg, self.id))
+
+    def handle_authentication_response(self, source_id, payload, topic_str):
+        response = None
+        if type(payload) == 'str':
+            response = parse_request_packet(payload)
+        else:
+            response = payload
+
+        if not response:
+            return None
+
+        if not validate_response_packet(response):
+            print_fail("WARNING:: Failed to validate response:\n{}".format(response))
+            return None
+
+        client_id = payload['client_id']
+        target = payload['target']
+        path = payload['path']
+        key = payload['key']
+
+        sa = SecurityAssociation(target, path, key)
+        print_header("[{}]::ADDING NEW SAD ENTRY {}".format(self.id, sa))
+        self.sad.add_security_association(target, sa)
+        print_sad(self.sad, "{}-SAD".format(self.id))
+
+    def choose_random_topic(self):
+        vertices = self.channel_graph.vertices()
+        r_node = choice(vertices)
+        return r_node
+
+    def random_request(self):
+        '''
+        Chooses random topic from channel graph
+        if sec asoc available, send message using key,
+        else request new security association
+        '''
+        topic_id = self.choose_random_topic()
+        sec_asoc = self.sad.find_valid_sa(self.id, topic_id)
+        if not sec_asoc:
+            self.request_sec_asoc(topic_id)
+        else:
+            #create new message
+            self.send_enc_packet(topic_id, "test-date")
+
+
+    def request_sec_asoc(self, topic_id):
+        ''''
+        {
+        "client_id" : 0,
+        "target" : "KEY-REQUEST",
+        "payload" : {
+            "target" : 3
+            }
+        }
+        '''
+
+        sa_req = create_request_packet(topic_id, self.id)
+        #Create path to target
+
+        topic_str = self.channel_graph.get_topic_str(topic_id)
+
+        req_packet = create_request_packet(topic_id, self.id)
+        msg_json = create_msg_packet(self.id, "KEY-REQUEST",req_packet, json_encode=True)
+        print_header("Publishing [{}] on topic [{}]".format(msg_json, topic_str))
+        self.mqtt_con.publish(topic_str, msg_json)
+
+    def send_enc_packet(self, topic_id, msg, target='PUBLISH'):
+        '''
+        Send encrypted data packet,
+        if key available in sad for topic
+        use key, else request new key
+        '''
+        topic_str = self.channel_graph.get_topic_str(topic_id)
+        sec_asoc = self.sad.find_valid_sa(self.id, topic_id)
+        if not sec_asoc:
+            print_fail("Client::send_enc_packet cannot find security association")
+            return
+        enc_msg = create_enc_message(topic_id, sec_asoc.key, msg)
+        msg = create_msg_packet(self.id, 'PUBLISH', enc_msg, json_encode=True)
+        self.mqtt_con.publish(topic_str, msg)
 
     def start(self):
         self.mqtt_con.subscribe("#")
-        #bcolors.print_fail("ERROR:: Client::start no implementation")
+        #print_fail("ERROR:: Client::start no implementation")
 
     def loop(self):
         while self.message_loop:
@@ -273,6 +352,29 @@ class Client:
             self.mqtt_con.loop()
             time.sleep(1)
             seconds = seconds + 1
+
+    def timed_random_choice(self, interval=1):
+        '''
+        interval is float value defining the number
+        of seconds because random requests
+        '''
+        c_time = time.time()
+        delta_time = c_time - self.timestamp
+        if delta_time > interval:
+            self.timestamp = time.time()
+            self.random_request()
+
+    def random_loop(self):
+        start = datetime.now()
+        while self.message_loop:
+           self.timed_random_choice()
+           self.mqtt_con.loop()
+           delta = datetime.now() - start
+           if delta.seconds > 10:
+               self.message_loop = False
+
+
+
 
 
 
@@ -289,23 +391,24 @@ n_clients = 1
 #testbed = input("Random(r)/Manual(m)")
 
 def create_server_worker(server_id, spd, channel_graph):
+    print_okblue("--------------{}-STARTING...-------------".format(server_id))
     s_sad = SecurityAssociationDatabase(spd, channel_graph)
     server = Server(spd, s_sad, channel_graph, 'key-server')
     server.connect()
     server.server_loop()
-    #server.loop()
-#    server.time_loop()
-    #server.loop()
-    bcolors.print_okblue("Server Done, exiting")
+    print_okblue("--------------{}-EXIT-------------".format(server_id))
+    print_okblue("Server Done, exiting")
 
 def create_client_worker(group, client_id, spd, channel_graph):
+    print_okblue("--------------{}-STARTED-----------------".format(client_id))
     #create group
     client = Client(group, client_id, spd, channel_graph)
     client.connect()
-    #client.start()
     client.start()
-    client.time_loop(10)
-    bcolors.print_okblue("Client " + str(client_id) + " Done")
+    client.random_loop()
+    client.mqtt_con.publish("/0", "KILL-SIGNAL")
+    print_okblue("Client " + str(client_id) + " Done")
+    print_okblue("--------------{}-EXIT-----------------".format(client_id))
 
 ## Create channel graph and databases
 channel_graph = Graph(height, children)
@@ -320,10 +423,8 @@ print(channel_graph)
 
 root = channel_graph.get_node(0)
 all_g = spd.create_group(root, channel_graph)
-spd.add_security_policy(0,all_g)
+spd.add_security_policy('client-0',all_g)
 #print spd
-print_spd(spd)
-
 #start server
 server_args = {
     'server_id': 'keyserver',
@@ -333,59 +434,41 @@ server_args = {
 
 s_thread = threading.Thread(target=create_server_worker, kwargs=server_args)
 s_thread.start()
-print("------------------")
-print("MAIN: Thread started")
-s_thread.join()
-print("STHREAD EXIT")
-print("------------------")
-
-#workers = []
-#client_workers = []
-#for c_id in range(n_clients):
-#    args = {
-#        'group' : GROUPS.__next__(),
-#        'client_id' : c_id,
-#        'spd' : spd,
-#        'channel_graph' : channel_graph
-#    }
-#    thread = threading.Thread(target=create_client_worker,kwargs=args)
-#    #workers.append(threading.Thread(target=create_server_worker)
-#    client_workers.append(thread)
-#
-##Start threads
-#for worker in client_workers:
-#    worker.start()
-#
-#for worker in client_workers:
-#    worker.join()
+#print("------------------")
+#print("MAIN: Thread started")
 #s_thread.join()
-bcolors.print_okgreen("-------------DONE--------------")
-#(self, spd, sad, channel_graph, server_id="key-server"):
-#server = Server(spd, sad, channel_graph)
-#server.connect()
-#server.loop()
+#print("STHREAD EXIT")
+#print("------------------")
+
+client_args = {
+    'spd': spd,
+    'channel_graph': channel_graph,
+    'client_id': None,
+    'group': None
+}
+
+client_args['client_id'] = 'client-0'
+client_args['group'] = all_g
+
+#spd.add_security_policy('client-0', group)
+
+c_thread = threading.Thread(target=create_client_worker, kwargs=client_args)
+c_thread.start()
+
+client_args['client_id'] = 'client-1'
+client_args['group'] = GROUPS.__next__()
+spd.add_security_policy('client-1',client_args['group'])
+
+print_spd(spd)
+
+print(client_args['group'])
+d_thread = threading.Thread(target=create_client_worker, kwargs=client_args)
+d_thread.start()
+
+d_thread.join()
+c_thread.join()
+s_thread.join()
+
+print_okgreen("-------------DONE--------------")
 
 
-
-#def on_message(client, userdata, message):
-#    time.sleep(1)
-#    print("received message =",str(message.payload.decode("utf-8")))
-#
-#CLIENT_NAME = "test-client"
-#MQTT_ADDR = "127.0.0.1"
-#MQTT_PORT = 1883
-#
-#client = mqtt.Client(CLIENT_NAME)
-#
-#client.on_message = on_message
-#
-#print("Connecting to broker")
-#
-#client.connect(MQTT_ADDR, MQTT_PORT, keepalive=60, bind_address="")
-#
-#client.subscribe("#")
-#
-#while True:
-#    client.loop()
-#
-#print("---END---")
